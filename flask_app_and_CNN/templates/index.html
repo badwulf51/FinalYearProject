@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+
+
+<html>
+
+    <head>
+        <title>Image Recognition App </title>
+        <style>
+            *{
+                font-size:25px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+        <h1 style="font-weight: bold, padding:10px"> Image Picker </h1>
+
+        <input id="image_selector" type="file"/>
+        <button id="predict_button">Predict </button>
+
+
+        <p>Prediction: <span id="fruit_prediction"> </span></p>
+        <img id="selected-image" style="font-size:12px" src=""/>
+
+
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            let base64Image;
+            $("#image_selector").change(function(){
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let dataURL = reader.result;
+                $("#selected_image").attr('src', dataURL);
+
+                base64Image = dataURL.replace(/^data:image\/[a-z]+;base64,/, "")
+                console.log(base64Image);
+            }
+            reader.readAsDataURL($("#image_selector")[0].files[0]);
+            $("fruit_prediction").text("");
+            });
+
+
+
+            $("#predict_button").click(function(event){
+                let message = {
+                   image: base64Image
+                }
+                console.log(message);
+                $.post("https://lit-mountain-89099.herokuapp.com/predict", JSON.stringify(message), function(response){
+                    $("#fruit_prediction").text(response.prediction);
+                    console.log(response);
+                });
+            });
+         </script>
+    </body>
+
+
+</html>
